@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskFlow.Api", "TaskFlow.Api\TaskFlow.Api.csproj", "{CA9AFE23-6B37-48A1-8F6A-A55AA3BD2B97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskFlow.DAL", "TaskFlow.DAL\TaskFlow.DAL.csproj", "{5DBA32A9-B660-4E58-87E4-C36AC86D4A86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA9AFE23-6B37-48A1-8F6A-A55AA3BD2B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA9AFE23-6B37-48A1-8F6A-A55AA3BD2B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA9AFE23-6B37-48A1-8F6A-A55AA3BD2B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA9AFE23-6B37-48A1-8F6A-A55AA3BD2B97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DBA32A9-B660-4E58-87E4-C36AC86D4A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DBA32A9-B660-4E58-87E4-C36AC86D4A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DBA32A9-B660-4E58-87E4-C36AC86D4A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DBA32A9-B660-4E58-87E4-C36AC86D4A86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

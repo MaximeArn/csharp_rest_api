@@ -1,0 +1,40 @@
+# --- Dossiers de compilation .NET ---
+TaskFlow.Api/bin/
+TaskFlow.Api/obj/
+TaskFlow.DAL/bin/
+TaskFlow.DAL/obj/
+
+# --- Assemblies .NET ---
+*.exe
+*.dll
+*.pdb
+*.app
+
+# --- VSCode & config éditeurs ---
+.vscode/
+*.code-workspace
+
+# --- Fichiers utilisateurs ---
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- OS et IDE divers ---
+.DS_Store
+Thumbs.db
+.idea/
+*.sln.iml
+
+# --- Résultats de test / logs ---
+TestResults/
+*.log
+*.dbmdl
+
+# --- EF Core (optionnel si tu veux cleaner les métadonnées) ---
+**/Migrations/*.Designer.cs
+**/Migrations/*Snapshot.cs
+
+# --- Secrets potentiels ---
+.env
+secrets.json
