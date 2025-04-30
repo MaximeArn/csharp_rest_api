@@ -1,4 +1,4 @@
-namespace TaskFlow.Api.DTOs
+namespace TaskFlow.Api.DTOs.Projects
 {
   public class CreateProjectDto
   {

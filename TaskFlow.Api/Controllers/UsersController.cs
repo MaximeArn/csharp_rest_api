@@ -28,6 +28,7 @@ public class UsersController : ControllerBase
   /// </summary>
   /// <param name="dto">Object containing name, email, and password.</param>
   /// <returns>A confirmation message or an error.</returns>
+  /// 
   [HttpPost("register")]
   public async Task<IActionResult> Register(RegisterDto dto)
 

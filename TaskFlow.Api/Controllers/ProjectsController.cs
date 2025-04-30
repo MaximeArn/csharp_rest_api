@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TaskFlow.DAL;
 using TaskFlow.DAL.Models;
-using TaskFlow.Api.DTOs;
+using TaskFlow.Api.DTOs.Projects;
 
 namespace TaskFlow.Api.Controllers;
 
@@ -97,6 +97,48 @@ public class ProjectsController : ControllerBase
 
     return Ok(project);
   }
+
+  /// <summary>
+  /// Updates a project owned by the authenticated user.
+  /// </summary>
+  /// <param name="id">The ID of the project to update.</param>
+  /// <param name="dto">Updated name and/or description.</param>
+  /// <returns>The updated project or error if not found.</returns>
+  [HttpPut("{id}")]
+  public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto dto)
+  {
+    var userId = GetCurrentUserId();
+    var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+    if (project == null)
+      return NotFound("Project not found or access denied.");
+
+    project.Name = dto.Name;
+    project.Description = dto.Description;
+
+    await _context.SaveChangesAsync();
+    return Ok(project);
+  }
+
+  /// <summary>
+  /// Deletes a project owned by the authenticated user.
+  /// </summary>
+  /// <param name="id">The ID of the project to delete.</param>
+  /// <returns>No content if successful, error otherwise.</returns>
+  [HttpDelete("{id}")]
+  public async Task<IActionResult> DeleteProject(int id)
+  {
+    var userId = GetCurrentUserId();
+    var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+    if (project == null)
+      return NotFound("Project not found or access denied.");
+
+    _context.Projects.Remove(project);
+    await _context.SaveChangesAsync();
+    return NoContent();
+  }
+
 
   private int GetCurrentUserId()
   {
