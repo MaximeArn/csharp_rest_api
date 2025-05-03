@@ -95,7 +95,23 @@ Ensuite, ajoutez ce token dans Swagger via le bouton `Authorize 🔒`.
 
 ---
 
-## 🧪 Tests manuels
+## 🧪 Seed de la base de données via Swagger
+
+Une route est disponible pour initialiser des données de démonstration :
+
+- `POST /api/seed` (accessible sans authentification)
+
+Elle crée automatiquement :
+
+- un utilisateur `demo@taskflow.com` / `demo123`
+- un projet de démo
+- deux tâches liées
+
+Vous pouvez ensuite utiliser cet utilisateur pour tester l’API.
+
+---
+
+## 🔪 Tests manuels
 
 Vous pouvez tester l’API via :
 
@@ -116,4 +132,4 @@ docker rm taskflow-sql
 
 ## ✍️ Auteur
 
-Projet réalisé par **Maxime Arnould** dans le cadre du cours .NET / SUPINFO 2025.
+Projet réalisé par **Maxime Arnould** et **Josue-remi Biyoghe-obiang** dans le cadre du cours .NET / SUPINFO 2025.
