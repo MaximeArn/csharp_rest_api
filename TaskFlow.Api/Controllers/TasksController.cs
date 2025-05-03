@@ -105,6 +105,12 @@ public class TasksController : ControllerBase
   {
     var userId = GetCurrentUserId();
 
+    if (!Enum.TryParse<TaskProgressStatus>(dto.Status, true, out var parsedStatus) ||
+        !Enum.IsDefined(typeof(TaskProgressStatus), parsedStatus))
+    {
+      return BadRequest($"Invalid status value. Allowed values: {string.Join(", ", Enum.GetNames(typeof(TaskProgressStatus)))}");
+    }
+
     var task = await _context.Tasks
         .Include(t => t.Project)
         .FirstOrDefaultAsync(t => t.Id == id && t.Project != null && t.Project.UserId == userId);
@@ -114,11 +120,12 @@ public class TasksController : ControllerBase
 
     task.Title = dto.Title;
     task.DueDate = dto.DueDate;
-    task.Status = dto.Status;
+    task.Status = parsedStatus;
 
     await _context.SaveChangesAsync();
     return Ok(MapToDto(task));
   }
+
 
 
   /// <summary>
