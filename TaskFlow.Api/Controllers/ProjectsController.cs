@@ -44,42 +44,7 @@ public class ProjectsController : ControllerBase
       query = query.Include(p => p.Tasks);
 
     var projects = await query.ToListAsync();
-
-    var result = projects.Select(p =>
-    {
-      var dto = new ProjectDto
-      {
-        Id = p.Id,
-        Name = p.Name,
-        Description = p.Description,
-        CreationDate = p.CreationDate
-      };
-
-      if (includeUser && p.User != null)
-      {
-        dto.User = new UserDto
-        {
-          Id = p.User.Id,
-          Email = p.User.Email,
-          Name = p.User.Name
-        };
-      }
-
-      if (includeTasks && p.Tasks != null)
-      {
-        dto.Tasks = p.Tasks.Select(t => new TaskDto
-        {
-          Id = t.Id,
-          Title = t.Title,
-          DueDate = t.DueDate,
-          Status = t.Status.ToString(),
-          ProjectId = t.ProjectId
-        }).ToList();
-      }
-
-      return dto;
-    });
-
+    var result = projects.Select(p => MapToDto(p, includeUser, includeTasks));
     return Ok(result);
   }
 
@@ -106,14 +71,7 @@ public class ProjectsController : ControllerBase
     _context.Projects.Add(project);
     await _context.SaveChangesAsync();
 
-    var result = new ProjectDto
-    {
-      Id = project.Id,
-      Name = project.Name,
-      Description = project.Description,
-      CreationDate = project.CreationDate
-    };
-
+    var result = MapToDto(project);
     return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, result);
   }
 
@@ -146,37 +104,8 @@ public class ProjectsController : ControllerBase
     if (project == null)
       return NotFound("Project not found or access denied.");
 
-    var dto = new ProjectDto
-    {
-      Id = project.Id,
-      Name = project.Name,
-      Description = project.Description,
-      CreationDate = project.CreationDate
-    };
-
-    if (includeUser && project.User != null)
-    {
-      dto.User = new UserDto
-      {
-        Id = project.User.Id,
-        Email = project.User.Email,
-        Name = project.User.Name
-      };
-    }
-
-    if (includeTasks && project.Tasks != null)
-    {
-      dto.Tasks = project.Tasks.Select(t => new TaskDto
-      {
-        Id = t.Id,
-        Title = t.Title,
-        DueDate = t.DueDate,
-        Status = t.Status.ToString(),
-        ProjectId = t.ProjectId
-      }).ToList();
-    }
-
-    return Ok(dto);
+    var result = MapToDto(project, includeUser, includeTasks);
+    return Ok(result);
   }
 
 
@@ -202,14 +131,7 @@ public class ProjectsController : ControllerBase
 
     await _context.SaveChangesAsync();
 
-    var result = new ProjectDto
-    {
-      Id = project.Id,
-      Name = project.Name,
-      Description = project.Description,
-      CreationDate = project.CreationDate
-    };
-
+    var result = MapToDto(project);
     return Ok(result);
   }
 
@@ -232,6 +154,41 @@ public class ProjectsController : ControllerBase
     _context.Projects.Remove(project);
     await _context.SaveChangesAsync();
     return NoContent();
+  }
+
+  private static ProjectDto MapToDto(Project p, bool includeUser = false, bool includeTasks = false)
+  {
+    var dto = new ProjectDto
+    {
+      Id = p.Id,
+      Name = p.Name,
+      Description = p.Description,
+      CreationDate = p.CreationDate
+    };
+
+    if (includeUser && p.User != null)
+    {
+      dto.User = new UserDto
+      {
+        Id = p.User.Id,
+        Email = p.User.Email,
+        Name = p.User.Name
+      };
+    }
+
+    if (includeTasks && p.Tasks != null)
+    {
+      dto.Tasks = p.Tasks.Select(t => new TaskDto
+      {
+        Id = t.Id,
+        Title = t.Title,
+        DueDate = t.DueDate,
+        Status = t.Status.ToString(),
+        ProjectId = t.ProjectId
+      }).ToList();
+    }
+
+    return dto;
   }
 
   private int GetCurrentUserId()
