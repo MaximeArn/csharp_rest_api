@@ -57,19 +57,6 @@ dotnet ef database update \
 
 ---
 
-## 🌱 \[Optionnel] Ajouter des données de test
-
-Dans `TaskFlow.Api/Data/Seed.cs`, vous pouvez ajouter manuellement du seeding (1 user, 1 project, 2 tâches).
-Sinon, voici une commande `curl` pour créer un utilisateur :
-
-```bash
-curl -X POST https://localhost:5001/api/users/register \
-  -H "Content-Type: application/json" \
-  -d '{ "name": "Test", "email": "test@test.com", "password": "password123" }'
-```
-
----
-
 ## 🚀 Lancer l’API
 
 ```bash
