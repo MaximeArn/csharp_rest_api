@@ -5,6 +5,8 @@ using System.Security.Claims;
 using TaskFlow.Api.DTOs.Tasks;
 using TaskFlow.DAL;
 using TaskFlow.DAL.Models;
+using static TaskFlow.Api.Mappers.DtoMappers;
+
 
 namespace TaskFlow.Api.Controllers;
 
@@ -161,20 +163,6 @@ public class TasksController : ControllerBase
     await _context.SaveChangesAsync();
     return NoContent();
   }
-
-  private static TaskDto MapToDto(TaskItem task)
-  {
-    return new TaskDto
-    {
-      Id = task.Id,
-      Title = task.Title,
-      DueDate = task.DueDate,
-      Status = task.Status.ToString(),
-      ProjectId = task.ProjectId,
-      Comments = task.Comments ?? new()
-    };
-  }
-
   private int GetCurrentUserId()
   {
     var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);

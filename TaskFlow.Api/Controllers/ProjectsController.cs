@@ -7,6 +7,7 @@ using TaskFlow.DAL.Models;
 using TaskFlow.Api.DTOs.Projects;
 using TaskFlow.Api.DTOs.Users;
 using TaskFlow.Api.DTOs.Tasks;
+using static TaskFlow.Api.Mappers.DtoMappers;
 
 namespace TaskFlow.Api.Controllers;
 
@@ -154,42 +155,6 @@ public class ProjectsController : ControllerBase
     _context.Projects.Remove(project);
     await _context.SaveChangesAsync();
     return NoContent();
-  }
-
-  private static ProjectDto MapToDto(Project p, bool includeUser = false, bool includeTasks = false)
-  {
-    var dto = new ProjectDto
-    {
-      Id = p.Id,
-      Name = p.Name,
-      Description = p.Description,
-      CreationDate = p.CreationDate
-    };
-
-    if (includeUser && p.User != null)
-    {
-      dto.User = new UserDto
-      {
-        Id = p.User.Id,
-        Email = p.User.Email,
-        Name = p.User.Name
-      };
-    }
-
-    if (includeTasks && p.Tasks != null)
-    {
-      dto.Tasks = p.Tasks.Select(t => new TaskDto
-      {
-        Id = t.Id,
-        Title = t.Title,
-        DueDate = t.DueDate,
-        Status = t.Status.ToString(),
-        ProjectId = t.ProjectId,
-        Comments = t.Comments ?? new()
-      }).ToList();
-    }
-
-    return dto;
   }
 
   private int GetCurrentUserId()
