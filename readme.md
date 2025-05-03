@@ -1,22 +1,31 @@
-This is an academic project to validate the knowledges on c# dotnet
+# 📚 TaskFlow API – Projet académique
 
-# 🛠️ Setup de la base de données (SQL Server via Docker)
-
-Ce projet utilise SQL Server comme SGBD.
-Voici les étapes à suivre pour faire tourner la base de données localement sur Mac (ou autre OS) via Docker.
+**TaskFlow** est une API REST développée en .NET 8 dans le cadre d’un projet académique.
+Elle permet de gérer des utilisateurs, des projets et des tâches, avec une authentification sécurisée via JWT.
 
 ---
 
-## 1. Prérequis
+## 🌟 Objectifs pédagogiques
 
-- Docker installé et en cours d'exécution
-- .NET SDK installé (v6 ou v8)
+Ce projet démontre la mise en place de :
+
+- Entity Framework Core (avec SQL Server)
+- Authentification JWT
+- Architecture propre (DTOs, Middleware, Injection de dépendance)
+- Gestion d’erreurs centralisée
+- Documentation Swagger
 
 ---
 
-## 2. Lancer SQL Server avec Docker
+## ⚙️ Prérequis
 
-Exécutez cette commande dans votre terminal :
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download) installé
+- Docker installé et démarré
+- (Facultatif) Un client SQL type Azure Data Studio ou DBeaver
+
+---
+
+## 🐳 Lancer SQL Server avec Docker
 
 ```bash
 docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Your_password123" \
@@ -24,16 +33,11 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Your_password123" \
   -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-### Paramètres personnalisables :
-
-- `SA_PASSWORD` : mot de passe de l'utilisateur `sa` (doit respecter les règles de sécurité)
-- `taskflow-sql` : nom du container Docker
-
 ---
 
-## 3. Configuration de la connexion (appsettings.json)
+## 🔧 Configurer la connexion
 
-Vérifiez que le fichier `TaskFlow.Api/appsettings.json` contient :
+Dans `TaskFlow.Api/appsettings.json` :
 
 ```json
 "ConnectionStrings": {
@@ -43,7 +47,7 @@ Vérifiez que le fichier `TaskFlow.Api/appsettings.json` contient :
 
 ---
 
-## 4. Créer la base via Entity Framework Core
+## 🧱 Appliquer les migrations EF Core
 
 ```bash
 dotnet ef database update \
@@ -51,4 +55,78 @@ dotnet ef database update \
   --startup-project TaskFlow.Api
 ```
 
-> Cela applique les migrations et crée la base `TaskFlowDb` dans SQL Server.
+---
+
+## 🌱 \[Optionnel] Ajouter des données de test
+
+Dans `TaskFlow.Api/Data/Seed.cs`, vous pouvez ajouter manuellement du seeding (1 user, 1 project, 2 tâches).
+Sinon, voici une commande `curl` pour créer un utilisateur :
+
+```bash
+curl -X POST https://localhost:5001/api/users/register \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Test", "email": "test@test.com", "password": "password123" }'
+```
+
+---
+
+## 🚀 Lancer l’API
+
+```bash
+dotnet run --project TaskFlow.Api
+```
+
+---
+
+## 📘 Accéder à la documentation Swagger
+
+> La doc Swagger est générée automatiquement :
+
+📍 [http://localhost:5000/swagger](http://localhost:5000/swagger) (ou `https://localhost:5001/swagger`)
+
+---
+
+## 🔒 Authentification
+
+- `POST /api/users/register` : inscription
+- `POST /api/users/login` : obtention d’un token JWT
+
+Ensuite, ajoutez ce token dans Swagger via le bouton `Authorize 🔒`.
+
+---
+
+## 📦 Endpoints REST principaux
+
+| Ressource | Méthode | Route             | Authentification requise |
+| --------- | ------- | ----------------- | ------------------------ |
+| Projects  | GET     | `/api/projects`   | ✅ Oui                   |
+| Projects  | POST    | `/api/projects`   | ✅ Oui                   |
+| Tasks     | GET     | `/api/tasks`      | ✅ Oui                   |
+| Tasks     | PUT     | `/api/tasks/{id}` | ✅ Oui                   |
+
+> Toutes les routes sont sécurisées (JWT obligatoire) sauf `/register` et `/login`.
+
+---
+
+## 🧪 Tests manuels
+
+Vous pouvez tester l’API via :
+
+- Swagger UI
+- Postman
+- `curl` (voir section seeding)
+
+---
+
+## 🪮 Nettoyer le conteneur Docker (facultatif)
+
+```bash
+docker stop taskflow-sql
+docker rm taskflow-sql
+```
+
+---
+
+## ✍️ Auteur
+
+Projet réalisé par **Maxime Arnould** dans le cadre du cours .NET / SUPINFO 2025.
