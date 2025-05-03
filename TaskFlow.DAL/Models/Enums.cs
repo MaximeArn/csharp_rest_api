@@ -6,10 +6,11 @@ namespace TaskFlow.DAL.Models
     User
   }
 
-  public enum TaskStatus
+  public enum TaskProgressStatus
   {
     Todo,
     InProgress,
     Done
   }
+
 }

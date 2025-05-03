@@ -38,3 +38,4 @@ TestResults/
 # --- Secrets potentiels ---
 .env
 secrets.json
+.fake

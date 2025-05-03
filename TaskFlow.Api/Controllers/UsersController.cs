@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using TaskFlow.Api.DTOs;
+using TaskFlow.Api.DTOs.Users;
 using TaskFlow.Api.Helpers;
 using TaskFlow.DAL;
 using TaskFlow.DAL.Models;

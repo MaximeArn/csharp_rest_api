@@ -5,7 +5,6 @@ namespace TaskFlow.DAL.Models
 {
   public class User
   {
-    [JsonIgnore]
     public int Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
@@ -17,7 +16,6 @@ namespace TaskFlow.DAL.Models
 
     public UserRole Role { get; set; }
 
-    [JsonIgnore]
     public List<Project> Projects { get; set; } = new();
   }
 }

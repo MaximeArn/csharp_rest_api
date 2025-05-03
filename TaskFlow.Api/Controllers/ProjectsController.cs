@@ -5,6 +5,8 @@ using System.Security.Claims;
 using TaskFlow.DAL;
 using TaskFlow.DAL.Models;
 using TaskFlow.Api.DTOs.Projects;
+using TaskFlow.Api.DTOs.Users;
+using TaskFlow.Api.DTOs.Tasks;
 
 namespace TaskFlow.Api.Controllers;
 
@@ -23,13 +25,14 @@ public class ProjectsController : ControllerBase
   /// <summary>
   /// Returns all projects owned by the authenticated user.
   /// </summary>
-  /// <param name="includeUser">If true, includes the project owner's details.</param>
-  /// <param name="includeTasks">If true, includes the list of tasks for each project.</param>
-  /// <returns>List of the user's projects.</returns>
+  /// <param name="includeUser">If true, includes project owner's details.</param>
+  /// <param name="includeTasks">If true, includes associated tasks.</param>
+  /// <response code="200">List of user's projects returned successfully.</response>
   [HttpGet]
   public async Task<IActionResult> GetProjects([FromQuery] bool includeUser = false, [FromQuery] bool includeTasks = false)
   {
     var userId = GetCurrentUserId();
+
     var query = _context.Projects
         .Where(p => p.UserId == userId)
         .AsQueryable();
@@ -41,14 +44,52 @@ public class ProjectsController : ControllerBase
       query = query.Include(p => p.Tasks);
 
     var projects = await query.ToListAsync();
-    return Ok(projects);
+
+    var result = projects.Select(p =>
+    {
+      var dto = new ProjectDto
+      {
+        Id = p.Id,
+        Name = p.Name,
+        Description = p.Description,
+        CreationDate = p.CreationDate
+      };
+
+      if (includeUser && p.User != null)
+      {
+        dto.User = new UserDto
+        {
+          Id = p.User.Id,
+          Email = p.User.Email,
+          Name = p.User.Name
+        };
+      }
+
+      if (includeTasks && p.Tasks != null)
+      {
+        dto.Tasks = p.Tasks.Select(t => new TaskDto
+        {
+          Id = t.Id,
+          Title = t.Title,
+          DueDate = t.DueDate,
+          Status = t.Status.ToString(),
+          ProjectId = t.ProjectId
+        }).ToList();
+      }
+
+      return dto;
+    });
+
+    return Ok(result);
   }
+
+
 
   /// <summary>
   /// Creates a new project for the authenticated user.
   /// </summary>
-  /// <param name="dto">The project data to create (name and optional description).</param>
-  /// <returns>The created project with its ID and metadata.</returns>
+  /// <param name="dto">Project data (name and optional description).</param>
+  /// <response code="201">Project created successfully.</response>
   [HttpPost]
   public async Task<IActionResult> CreateProject([FromBody] CreateProjectDto dto)
   {
@@ -65,16 +106,26 @@ public class ProjectsController : ControllerBase
     _context.Projects.Add(project);
     await _context.SaveChangesAsync();
 
-    return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
+    var result = new ProjectDto
+    {
+      Id = project.Id,
+      Name = project.Name,
+      Description = project.Description,
+      CreationDate = project.CreationDate
+    };
+
+    return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, result);
   }
 
+
   /// <summary>
-  /// Retrieves a specific project by its ID if owned by the authenticated user.
+  /// Retrieves a specific project by its ID if owned by the user.
   /// </summary>
-  /// <param name="id">The project ID.</param>
-  /// <param name="includeUser">If true, includes the project owner's details.</param>
-  /// <param name="includeTasks">If true, includes the project's tasks.</param>
-  /// <returns>The requested project or an error if not found or unauthorized.</returns>
+  /// <param name="id">The ID of the project.</param>
+  /// <param name="includeUser">If true, includes project owner's details.</param>
+  /// <param name="includeTasks">If true, includes associated tasks.</param>
+  /// <response code="200">The project is returned.</response>
+  /// <response code="404">Project not found or not accessible by the user.</response>
   [HttpGet("{id}")]
   public async Task<IActionResult> GetProjectById(int id, [FromQuery] bool includeUser = false, [FromQuery] bool includeTasks = false)
   {
@@ -95,15 +146,48 @@ public class ProjectsController : ControllerBase
     if (project == null)
       return NotFound("Project not found or access denied.");
 
-    return Ok(project);
+    var dto = new ProjectDto
+    {
+      Id = project.Id,
+      Name = project.Name,
+      Description = project.Description,
+      CreationDate = project.CreationDate
+    };
+
+    if (includeUser && project.User != null)
+    {
+      dto.User = new UserDto
+      {
+        Id = project.User.Id,
+        Email = project.User.Email,
+        Name = project.User.Name
+      };
+    }
+
+    if (includeTasks && project.Tasks != null)
+    {
+      dto.Tasks = project.Tasks.Select(t => new TaskDto
+      {
+        Id = t.Id,
+        Title = t.Title,
+        DueDate = t.DueDate,
+        Status = t.Status.ToString(),
+        ProjectId = t.ProjectId
+      }).ToList();
+    }
+
+    return Ok(dto);
   }
+
+
 
   /// <summary>
   /// Updates a project owned by the authenticated user.
   /// </summary>
   /// <param name="id">The ID of the project to update.</param>
-  /// <param name="dto">Updated name and/or description.</param>
-  /// <returns>The updated project or error if not found.</returns>
+  /// <param name="dto">Updated project data.</param>
+  /// <response code="200">Project updated successfully.</response>
+  /// <response code="404">Project not found or not accessible.</response>
   [HttpPut("{id}")]
   public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto dto)
   {
@@ -117,14 +201,25 @@ public class ProjectsController : ControllerBase
     project.Description = dto.Description;
 
     await _context.SaveChangesAsync();
-    return Ok(project);
+
+    var result = new ProjectDto
+    {
+      Id = project.Id,
+      Name = project.Name,
+      Description = project.Description,
+      CreationDate = project.CreationDate
+    };
+
+    return Ok(result);
   }
+
 
   /// <summary>
   /// Deletes a project owned by the authenticated user.
   /// </summary>
   /// <param name="id">The ID of the project to delete.</param>
-  /// <returns>No content if successful, error otherwise.</returns>
+  /// <response code="204">Project deleted successfully.</response>
+  /// <response code="404">Project not found or not accessible.</response>
   [HttpDelete("{id}")]
   public async Task<IActionResult> DeleteProject(int id)
   {
@@ -138,7 +233,6 @@ public class ProjectsController : ControllerBase
     await _context.SaveChangesAsync();
     return NoContent();
   }
-
 
   private int GetCurrentUserId()
   {
