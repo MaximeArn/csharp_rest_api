@@ -7,5 +7,6 @@ namespace TaskFlow.Api.DTOs.Tasks
     public required DateTime? DueDate { get; set; }
     public required string Status { get; set; }
     public required int ProjectId { get; set; }
+    public required List<string> Comments { get; set; } = new();
   }
 }

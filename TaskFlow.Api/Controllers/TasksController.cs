@@ -105,12 +105,6 @@ public class TasksController : ControllerBase
   {
     var userId = GetCurrentUserId();
 
-    if (!Enum.TryParse<TaskProgressStatus>(dto.Status, true, out var parsedStatus) ||
-        !Enum.IsDefined(typeof(TaskProgressStatus), parsedStatus))
-    {
-      return BadRequest($"Invalid status value. Allowed values: {string.Join(", ", Enum.GetNames(typeof(TaskProgressStatus)))}");
-    }
-
     var task = await _context.Tasks
         .Include(t => t.Project)
         .FirstOrDefaultAsync(t => t.Id == id && t.Project != null && t.Project.UserId == userId);
@@ -118,13 +112,30 @@ public class TasksController : ControllerBase
     if (task == null)
       return NotFound("Task not found or access denied.");
 
-    task.Title = dto.Title;
-    task.DueDate = dto.DueDate;
-    task.Status = parsedStatus;
+    if (!string.IsNullOrWhiteSpace(dto.Title))
+      task.Title = dto.Title;
+
+    if (dto.DueDate.HasValue)
+      task.DueDate = dto.DueDate;
+
+    if (!string.IsNullOrWhiteSpace(dto.Status))
+    {
+      if (!Enum.TryParse<TaskProgressStatus>(dto.Status, true, out var parsedStatus) ||
+          !Enum.IsDefined(typeof(TaskProgressStatus), parsedStatus))
+      {
+        return BadRequest($"Invalid status value. Allowed values: {string.Join(", ", Enum.GetNames(typeof(TaskProgressStatus)))}");
+      }
+
+      task.Status = parsedStatus;
+    }
+
+    if (dto.Comments != null)
+      task.Comments = dto.Comments;
 
     await _context.SaveChangesAsync();
     return Ok(MapToDto(task));
   }
+
 
 
 
@@ -159,7 +170,8 @@ public class TasksController : ControllerBase
       Title = task.Title,
       DueDate = task.DueDate,
       Status = task.Status.ToString(),
-      ProjectId = task.ProjectId
+      ProjectId = task.ProjectId,
+      Comments = task.Comments ?? new()
     };
   }
 

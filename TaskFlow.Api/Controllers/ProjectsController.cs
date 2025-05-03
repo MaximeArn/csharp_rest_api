@@ -184,7 +184,8 @@ public class ProjectsController : ControllerBase
         Title = t.Title,
         DueDate = t.DueDate,
         Status = t.Status.ToString(),
-        ProjectId = t.ProjectId
+        ProjectId = t.ProjectId,
+        Comments = t.Comments ?? new()
       }).ToList();
     }
 
