@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using TaskFlow.Api.DTOs.Users;
 using TaskFlow.Api.Helpers;
@@ -33,6 +34,10 @@ public class UsersController : ControllerBase
   public async Task<IActionResult> Register(RegisterDto dto)
 
   {
+
+    if (!new EmailAddressAttribute().IsValid(dto.Email))
+      return BadRequest("Invalid email format.");
+
     if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
       return BadRequest("Password must be at least 6 characters.");
 
