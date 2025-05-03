@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TaskFlow.DAL;
 using TaskFlow.Api.Helpers;
+using TaskFlow.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,8 +81,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

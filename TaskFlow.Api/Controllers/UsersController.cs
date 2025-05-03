@@ -78,6 +78,15 @@ public class UsersController : ControllerBase
     return Ok(new { token });
   }
 
+  /// <summary>
+  /// Throw an exception to test the exception middleware 
+  /// </summary>
+  [HttpGet("test-exception")]
+  public IActionResult ThrowTestException()
+  {
+    throw new Exception("Test exception from middleware");
+  }
+
   private string ComputeSha256Hash(string input)
   {
     using var sha = SHA256.Create();
